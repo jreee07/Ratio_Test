@@ -1,211 +1,105 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meter Calculation Tool</title>
+  <meta charset="UTF-8">
+  <title>Ratio Test Calculator</title>
   <style>
-    :root { --bg:#0b1220; --card:#121a2b; --muted:#9fb0c9; --text:#e7eefc; --accent:#4f8cff; --danger:#ff6b6b; }
-    *{box-sizing:border-box}
-    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial; background:linear-gradient(180deg,#0b1220,#0f1526 40%,#0b1220); color:var(--text);}
-    .container{max-width:960px;margin:32px auto;padding:16px}
-    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h1{margin:0 0 8px; font-size:28px}
-    p.subtitle{margin:0 0 18px; color:var(--muted)}
-    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:16px}
-    .col-6{grid-column:span 6}
-    .col-12{grid-column:span 12}
-    label{display:block; font-weight:600; margin-bottom:8px}
-    select,input{width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:#0c1527; color:var(--text)}
-    input::placeholder{color:#6f809a}
-    .row{display:flex; gap:10px}
-    .row input{flex:1}
-    .muted{color:var(--muted); font-size:13px}
-    .btn{display:inline-flex; align-items:center; gap:8px; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:#0c1628; color:var(--text); cursor:pointer}
-    .btn.primary{background:var(--accent); color:#041023; border-color:transparent; font-weight:700}
-    .btn:disabled{opacity:.5; cursor:not-allowed}
-    .result{padding:16px;border-radius:14px;background:#0d1a33; border:1px dashed rgba(255,255,255,.12)}
-    .result h3{margin:0 0 8px}
-    .kv{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.06)}
-    .kv:last-child{border-bottom:none}
-    code.badge{padding:2px 8px; background:#0b1c39; border:1px solid rgba(255,255,255,.1); border-radius:24px}
-    .warn{color:var(--danger)}
-    footer{margin-top:18px; text-align:center; color:#89a2c9; font-size:12px}
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    label { display: block; margin-top: 10px; }
+    select, input { margin-top: 5px; padding: 5px; width: 200px; }
+    button { margin-top: 15px; padding: 10px 20px; }
+    .result { margin-top: 20px; font-weight: bold; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>Meter Calculation Tool</h1>
-      <p class="subtitle">Implements your 8-step flow. Currently, Condition <b>(Step‑1: 11000/110, Step‑2: LT Side)</b> is fully coded; other combinations show a friendly TODO.</p><div class="grid">
-    <!-- Step 1 -->
-    <div class="col-6">
-      <label for="opt1">Step 1 — Select system</label>
-      <select id="opt1">
-        <option value="11000/110">11000/110</option>
-        <option value="33000/110">33000/110</option>
-        <option value="240/240 LT CT">240/240 LT CT</option>
-        <option value="Whole Current">Whole Current</option>
-      </select>
-    </div>
-    
-    <!-- Step 2 -->
-    <div class="col-6">
-      <label for="opt2">Step 2 — Select side</label>
-      <select id="opt2">
-        <option value="LT Side">LT Side</option>
-        <option value="HT Side">HT Side</option>
-      </select>
-    </div>
+  <h2>Ratio Test Calculator</h2>
 
-    <!-- Step 3 -->
-    <div class="col-12">
-      <label>Step 3 — Clamp meter currents (A): i1, i2, i3</label>
-      <div class="row">
-        <input id="i1" type="number" step="any" placeholder="i1" />
-        <input id="i2" type="number" step="any" placeholder="i2" />
-        <input id="i3" type="number" step="any" placeholder="i3" />
-      </div>
-      <div class="muted">These are the three phase currents measured by clamp meter.</div>
-    </div>
+  <!-- Step 1 -->
+  <label>Step-1: Select Transformer Type</label>
+  <select id="transformer">
+    <option value="11000/110">11000/110</option>
+    <option value="33000/110">33000/110</option>
+    <option value="240/240">240/240 LT CT</option>
+    <option value="whole">Whole Current</option>
+  </select>
 
-    <!-- Step 4 (auto) -->
-    <div class="col-6">
-      <label>Step 4 — Average clamp current (auto)</label>
-      <input id="avgClamp" type="text" readonly />
-    </div>
+  <!-- Step 2 -->
+  <label>Step-2: Select Side</label>
+  <select id="side">
+    <option value="LT">LT Side</option>
+    <option value="HT">HT Side</option>
+  </select>
 
-    <!-- Step 5 -->
-    <div class="col-12">
-      <label>Step 5 — Meter currents (A): I1, I2, I3</label>
-      <div class="row">
-        <input id="I1" type="number" step="any" placeholder="I1" />
-        <input id="I2" type="number" step="any" placeholder="I2" />
-        <input id="I3" type="number" step="any" placeholder="I3" />
-      </div>
-    </div>
+  <!-- Step 3 -->
+  <label>Step-3: Clamp Meter Currents (i1, i2, i3)</label>
+  <input type="number" id="i1" placeholder="i1">
+  <input type="number" id="i2" placeholder="i2">
+  <input type="number" id="i3" placeholder="i3">
 
-    <!-- Step 6 (auto) -->
-    <div class="col-6">
-      <label>Step 6 — Average meter current (auto)</label>
-      <input id="avgMeter" type="text" readonly />
-    </div>
+  <!-- Step 5 -->
+  <label>Step-5: Meter Currents (I1, I2, I3)</label>
+  <input type="number" id="I1" placeholder="I1">
+  <input type="number" id="I2" placeholder="I2">
+  <input type="number" id="I3" placeholder="I3">
 
-    <!-- Step 7 -->
-    <div class="col-6">
-      <label for="omf">Step 7 — OMF as per billing software <span class="muted">(enter % value)</span></label>
-      <input id="omf" type="number" step="any" placeholder="e.g., 100 for 100%" />
-    </div>
+  <!-- Step 7 -->
+  <label>Step-7: Enter OMF</label>
+  <input type="number" id="omf" placeholder="OMF">
 
-    <!-- Actions -->
-    <div class="col-12" style="display:flex; gap:10px; align-items:center; margin-top:6px;">
-      <button class="btn primary" id="calcBtn">Calculate</button>
-      <button class="btn" id="resetBtn">Reset</button>
-      <span class="muted">Average fields update live; press <b>Calculate</b> to apply condition-based formulae.</span>
-    </div>
+  <button onclick="calculate()">Calculate</button>
 
-    <!-- Results -->
-    <div class="col-12 result" id="results" style="display:none">
-      <h3>Results</h3>
-      <div id="kvList"></div>
-      <div id="note" class="muted" style="margin-top:10px"></div>
-    </div>
-  </div>
+  <div class="result" id="result"></div>
 
-  <footer>
-    v1.0 • Add more conditions later in <code class="badge">applyCondition()</code>
-  </footer>
-</div>
-
-  </div><script>
-  const ids = x => x.map(id => document.getElementById(id));
-  const [opt1,opt2,i1,i2,i3,avgClamp,I1,I2,I3,avgMeter,omf,calcBtn,resetBtn,results,kvList,note] =
-    ids(["opt1","opt2","i1","i2","i3","avgClamp","I1","I2","I3","avgMeter","omf","calcBtn","resetBtn","results","kvList","note"]);
-
-  function num(v){ const n = parseFloat(v); return isFinite(n) ? n : 0; }
-
-  function average(a,b,c){
-    const arr = [num(a), num(b), num(c)].filter(v => !Number.isNaN(v));
-    if (arr.length === 0) return 0;
-    return arr.reduce((s,v)=>s+v,0)/arr.length;
-  }
-
-  function updateAverages(){
-    const avgC = average(i1.value, i2.value, i3.value);
-    const avgM = average(I1.value, I2.value, I3.value);
-    avgClamp.value = avgC.toFixed(3);
-    avgMeter.value = avgM.toFixed(3);
-  }
-
-  [i1,i2,i3,I1,I2,I3].forEach(el => el.addEventListener('input', updateAverages));
-  updateAverages();
-
-  function clearKV(){ kvList.innerHTML = ''; }
-  function addKV(label,value){
-    const row = document.createElement('div');
-    row.className = 'kv';
-    row.innerHTML = <div>${label}</div><div><code class="badge">${value}</code></div>;
-    kvList.appendChild(row);
-  }
-
-  function applyCondition(avgClampVal, omfPct){
-    const s1 = opt1.value; // Step 1 selection
-    const s2 = opt2.value; // Step 2 selection
-
-    // Note: OMF is provided in %, convert to fraction for calculation where needed
-    const omfFraction = omfPct / 100.0;
-
-    // Condition provided by you:
-    // If Step-1 = 11000/110 and Step-2 = LT Side
-    // Calculated meter current = (avgClamp) / 26.5 / (OMF/100)
-    if (s1 === '11000/110' && s2 === 'LT Side'){
-      const calculatedMeterCurrent = avgClampVal / 26.5 / omfFraction;
-      addKV('Condition', '11000/110 + LT Side');
-      addKV('Formula', 'Calc Meter I = AvgClamp / 26.5 / (OMF/100)');
-      addKV('Avg Clamp Current (A)', avgClampVal.toFixed(3));
-      addKV('OMF (%)', omfPct.toFixed(3));
-      addKV('Calculated Meter Current (A)', calculatedMeterCurrent.toFixed(3));
-
-      // CT ratio output placeholder — not defined in your rule set yet
-      addKV('CT Ratio', '— (define rule)');
-      note.innerHTML = 'Only this condition is implemented so far. Provide CT ratio/OMF rules for other combinations and I\'ll wire them in.';
-      return;
+  <script>
+    function average(values) {
+      let valid = values.filter(v => !isNaN(v));
+      if (valid.length === 0) return 0;
+      return valid.reduce((a, b) => a + b, 0) / valid.length;
     }
 
-    // Fallback for not-yet-defined conditions
-    addKV('Condition', ${s1} + ${s2});
-    addKV('Status', 'TODO: no formula defined yet for this case');
-    note.innerHTML = '<span class="warn">No condition-specific formula provided.</span> Share the formula for this combination and it will be added.';
-  }
+    function calculate() {
+      // Step 1 & 2 selections
+      let transformer = document.getElementById("transformer").value;
+      let side = document.getElementById("side").value;
 
-  calcBtn.addEventListener('click', () => {
-    clearKV();
-    results.style.display = 'block';
+      // Step 3 avg clamp current
+      let i1 = parseFloat(document.getElementById("i1").value);
+      let i2 = parseFloat(document.getElementById("i2").value);
+      let i3 = parseFloat(document.getElementById("i3").value);
+      let avgClamp = average([i1, i2, i3]);
 
-    const avgClampVal = num(avgClamp.value);
-    const avgMeterVal = num(avgMeter.value);
-    const omfPct = num(omf.value);
+      // Step 5 avg meter current
+      let I1 = parseFloat(document.getElementById("I1").value);
+      let I2 = parseFloat(document.getElementById("I2").value);
+      let I3 = parseFloat(document.getElementById("I3").value);
+      let avgMeter = average([I1, I2, I3]);
 
-    // Basic validation
-    const msgs = [];
-    if (!isFinite(avgClampVal) || avgClampVal <= 0) msgs.push('Average clamp current must be > 0.');
-    if (!isFinite(omfPct) || omfPct <= 0) msgs.push('OMF (%) must be > 0.');
+      // Step 7 OMF
+      let omf = parseFloat(document.getElementById("omf").value);
 
-    if (msgs.length){
-      addKV('Validation', msgs.join(' '));
-      note.innerHTML = '<span class="warn">Fix the validation errors above and try again.</span>';
-      return;
+      let calcCurrent = 0;
+
+      // Apply formulas
+      if (transformer === "11000/110" && side === "LT") {
+        calcCurrent = avgClamp / 26.5 / (omf / 100);
+      } else if (transformer === "11000/110" && side === "HT") {
+        calcCurrent = avgClamp / (omf / 100);
+      } else if (transformer === "33000/110" && side === "LT") {
+        calcCurrent = avgClamp / 79.5 / (omf / 300);
+      } else if (transformer === "33000/110" && side === "HT") {
+        calcCurrent = avgClamp / (omf / 300);
+      } else if (transformer === "240/240") {
+        calcCurrent = avgClamp / omf;
+      } else if (transformer === "whole") {
+        calcCurrent = avgClamp;
+      }
+
+      document.getElementById("result").innerHTML = `
+        Avg Clamp Current: ${avgClamp.toFixed(2)} <br>
+        Avg Meter Current: ${avgMeter.toFixed(2)} <br>
+        Calculated Meter Current: <strong>${calcCurrent.toFixed(2)}</strong>
+      `;
     }
-
-    addKV('Average Meter Current (input) (A)', avgMeterVal.toFixed(3));
-    applyCondition(avgClampVal, omfPct);
-  });
-
-  resetBtn.addEventListener('click', () => {
-    [i1,i2,i3,I1,I2,I3,omf].forEach(el => el.value='');
-    updateAverages();
-    clearKV();
-    results.style.display = 'none';
-    note.innerHTML = '';
-  });
-</script></body>
+  </script>
+</body>
 </html>
