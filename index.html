@@ -6,8 +6,7 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     label { display: block; margin-top: 10px; }
-    select, input { margin-top: 5px; padding: 5px; width: 200px; }
-    button { margin-top: 15px; padding: 10px 20px; }
+    button { margin-top: 20px; padding: 10px; }
     .result { margin-top: 20px; font-weight: bold; }
   </style>
 </head>
@@ -15,89 +14,101 @@
   <h2>Ratio Test Calculator</h2>
 
   <!-- Step 1 -->
-  <label>Select PT Ratio</label>
-  <select id="transformer">
+  <label>Select PT Ratio:</label>
+  <select id="transformerType">
     <option value="11000/110">11000/110</option>
     <option value="33000/110">33000/110</option>
     <option value="240/240">240/240 LT CT</option>
-    <option value="whole">Whole Current</option>
+    <option value="Whole">Whole Current</option>
   </select>
 
   <!-- Step 2 -->
-  <label>Select Transformer Current Measuring Side</label>
+  <label>Select Transformer Current Measuring Side:</label>
   <select id="side">
     <option value="LT">LT Side</option>
     <option value="HT">HT Side</option>
   </select>
 
   <!-- Step 3 -->
-  <label>Clamp on Meter Currents</label>
+  <label>Clamp On Meter Currents:</label>
   <input type="number" id="i1" placeholder="i1">
   <input type="number" id="i2" placeholder="i2">
   <input type="number" id="i3" placeholder="i3">
 
   <!-- Step 5 -->
-  <label>Energy Meter Currents</label>
+  <label>Energy Meter Currents:</label>
   <input type="number" id="I1" placeholder="I1">
   <input type="number" id="I2" placeholder="I2">
   <input type="number" id="I3" placeholder="I3">
 
   <!-- Step 7 -->
-  <label>Enter OMF as Per Billing Software</label>
-  <input type="number" id="omf" placeholder="OMF">
+  <label>OMF as per Billing Software:</label>
+  <input type="number" id="inputOMF">
 
   <button onclick="calculate()">Calculate</button>
 
-  <div class="result" id="result"></div>
+  <div class="result" id="output"></div>
 
   <script>
-    function average(values) {
-      let valid = values.filter(v => !isNaN(v));
-      if (valid.length === 0) return 0;
-      return valid.reduce((a, b) => a + b, 0) / valid.length;
+    function mround(value, multiple) {
+      return Math.round(value / multiple) * multiple;
     }
 
     function calculate() {
-      // Step 1 & 2 selections
-      let transformer = document.getElementById("transformer").value;
-      let side = document.getElementById("side").value;
+      const type = document.getElementById('transformerType').value;
+      const side = document.getElementById('side').value;
+      const i1 = parseFloat(document.getElementById('i1').value) || 0;
+      const i2 = parseFloat(document.getElementById('i2').value) || 0;
+      const i3 = parseFloat(document.getElementById('i3').value) || 0;
+      const I1 = parseFloat(document.getElementById('I1').value) || 0;
+      const I2 = parseFloat(document.getElementById('I2').value) || 0;
+      const I3 = parseFloat(document.getElementById('I3').value) || 0;
+      const inputOMF = parseFloat(document.getElementById('inputOMF').value) || 0;
 
-      // Step 3 avg clamp current
-      let i1 = parseFloat(document.getElementById("i1").value);
-      let i2 = parseFloat(document.getElementById("i2").value);
-      let i3 = parseFloat(document.getElementById("i3").value);
-      let avgClamp = average([i1, i2, i3]);
+      const avgClamp = (i1 + i2 + i3) / 3;
+      const avgMeter = (I1 + I2 + I3) / 3;
 
-      // Step 5 avg meter current
-      let I1 = parseFloat(document.getElementById("I1").value);
-      let I2 = parseFloat(document.getElementById("I2").value);
-      let I3 = parseFloat(document.getElementById("I3").value);
-      let avgMeter = average([I1, I2, I3]);
+      let calcMeterCurrent = 0;
+      let calcOMF = 0;
+      let comment = "";
 
-      // Step 7 OMF
-      let omf = parseFloat(document.getElementById("omf").value);
-
-      let calcCurrent = 0;
-
-      // Apply formulas
-      if (transformer === "11000/110" && side === "LT") {
-        calcCurrent = avgClamp / 26.5 / (omf / 100);
-      } else if (transformer === "11000/110" && side === "HT") {
-        calcCurrent = avgClamp / (omf / 100);
-      } else if (transformer === "33000/110" && side === "LT") {
-        calcCurrent = avgClamp / 79.5 / (omf / 300);
-      } else if (transformer === "33000/110" && side === "HT") {
-        calcCurrent = avgClamp / (omf / 300);
-      } else if (transformer === "240/240") {
-        calcCurrent = avgClamp / omf;
-      } else if (transformer === "whole") {
-        calcCurrent = avgClamp;
+      // Calculated Meter Current formulas
+      if (type === "11000/110" && side === "LT") {
+        calcMeterCurrent = avgClamp / 26.5 / (inputOMF / 100);
+        calcOMF = mround((avgClamp / 26.5 / avgMeter) * 100, 100);
+      } else if (type === "11000/110" && side === "HT") {
+        calcMeterCurrent = avgClamp / (inputOMF / 100);
+        calcOMF = mround((avgClamp / avgMeter) * 100, 100);
+      } else if (type === "33000/110" && side === "LT") {
+        calcMeterCurrent = avgClamp / 79.5 / (inputOMF / 300);
+        calcOMF = mround((avgClamp / 79.5 / avgMeter) * 100, 100);
+      } else if (type === "33000/110" && side === "HT") {
+        calcMeterCurrent = avgClamp / (inputOMF / 300);
+        calcOMF = mround((avgClamp / avgMeter) * 100, 100);
+      } else if (type === "240/240") {
+        calcMeterCurrent = avgClamp / inputOMF;
+        calcOMF = mround((avgClamp / avgMeter), 10);
+      } else if (type === "Whole") {
+        calcMeterCurrent = avgClamp;
+        calcOMF = 1;
       }
 
-      document.getElementById("result").innerHTML = `
-        Avg Clamp Current: ${avgClamp.toFixed(2)} <br>
-        Avg Meter Current: ${avgMeter.toFixed(2)} <br>
-        Calculated Meter Current: <strong>${calcCurrent.toFixed(2)}</strong>
+      // Comment check
+      if (calcOMF > inputOMF) {
+        comment = "😡 Oh no!!!, Big Problem 😡";
+      } else if (calcOMF < inputOMF) {
+        comment = "🤫 Shhh!!! Discuss privately in office 🤫";
+      } else {
+        comment = "👍 Hurray, Everything's Fine 👍";
+      }
+
+      // Show result
+      document.getElementById('output').innerHTML = `
+        Average Clamp Current: ${avgClamp.toFixed(2)} <br>
+        Average Meter Current: ${avgMeter.toFixed(2)} <br>
+        Calculated Meter Current: ${calcMeterCurrent.toFixed(2)} <br>
+        Calculated OMF: ${calcOMF} <br>
+        Comment: ${comment}
       `;
     }
   </script>
