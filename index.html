@@ -15,7 +15,7 @@
   <h2>Ratio Test Calculator</h2>
 
   <!-- Step 1 -->
-  <label>Step-1: Select Transformer Type</label>
+  <label>Select PT Ratio</label>
   <select id="transformer">
     <option value="11000/110">11000/110</option>
     <option value="33000/110">33000/110</option>
@@ -24,26 +24,26 @@
   </select>
 
   <!-- Step 2 -->
-  <label>Step-2: Select Side</label>
+  <label>Select Transformer Current Measuring Side</label>
   <select id="side">
     <option value="LT">LT Side</option>
     <option value="HT">HT Side</option>
   </select>
 
   <!-- Step 3 -->
-  <label>Step-3: Clamp Meter Currents (i1, i2, i3)</label>
+  <label>Clamp on Meter Currents</label>
   <input type="number" id="i1" placeholder="i1">
   <input type="number" id="i2" placeholder="i2">
   <input type="number" id="i3" placeholder="i3">
 
   <!-- Step 5 -->
-  <label>Step-5: Meter Currents (I1, I2, I3)</label>
+  <label>Energy Meter Currents</label>
   <input type="number" id="I1" placeholder="I1">
   <input type="number" id="I2" placeholder="I2">
   <input type="number" id="I3" placeholder="I3">
 
   <!-- Step 7 -->
-  <label>Step-7: Enter OMF</label>
+  <label>Enter OMF as Per Billing Software</label>
   <input type="number" id="omf" placeholder="OMF">
 
   <button onclick="calculate()">Calculate</button>
