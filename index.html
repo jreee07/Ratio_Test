@@ -1,157 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Ratio Test Calculator</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#f3f6fa; margin:0; padding:20px; }
-    .container { max-width: 860px; margin:auto; background:#fff; padding:24px; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,.08); }
-    h2 { text-align:center; margin:0 0 18px; }
-    label { font-weight:600; display:block; margin:12px 0 6px; }
-    input, select { width:100%; padding:10px; border:1px solid #d0d7e2; border-radius:10px; font-size:15px; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-    button { margin-top:16px; width:100%; padding:12px; border:none; border-radius:10px; background:#2563eb; color:#fff; font-size:16px; cursor:pointer; }
-    button:hover { background:#1e4ed6; }
-
-    .results { margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    .box { background:#eef6ff; padding:14px; border-radius:12px; text-align:center; font-weight:700; }
-    .badge { display:block; font-size:13px; font-weight:600; opacity:.8; margin-bottom:6px; }
-
-    /* Highlight for Calculated Meter */
-    .box.calc { grid-column:1 / -1; background:linear-gradient(135deg, #00c6ff, #0072ff); color:#fff; box-shadow:0 6px 18px rgba(0,114,255,.25); }
-    .value { font-size:22px; display:block; }
-
-    /* Difference coloring */
-    .box.diff-ok { background:#e6ffed; color:#065f46; border:2px solid #34d399; }
-    .box.diff-bad { background:#fff5f5; color:#991b1b; border:2px solid #f87171; }
-
-    /* Comment styles */
-    .comment { margin-top:14px; padding:14px; border-radius:12px; text-align:center; font-weight:800; font-size:18px; }
-    .comment.ok { background:#e8fff3; color:#065f46; border:2px solid #22c55e; }
-    .comment.warn { background:#fff1f2; color:#9f1239; border:2px solid #fb7185; }
-
-    @media (max-width: 720px) { .grid-2, .grid-3, .results { grid-template-columns:1fr; } .box.calc { grid-column:auto; } }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f7fb;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .grid {
+      display: grid;
+      gap: 15px;
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      color: #444;
+    }
+    input, select, button {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+    }
+    button {
+      background: #0078d7;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #005a9e;
+    }
+    .result-box {
+      background: #eef6ff;
+      border-left: 5px solid #0078d7;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    .highlight {
+      background: #fff3cd;
+      border-left: 5px solid #ff9800;
+    }
+    .comment {
+      text-align: center;
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .ok {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
+    .problem {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid #dc3545;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>⚡ Ratio Test Calculator</h2>
-
-    <!-- Selections -->
-    <div class="grid-2">
-      <div>
-        <label>Transformer Type</label>
-        <select id="transformer">
-          <option value="11000/110">11000/110</option>
-          <option value="33000/110">33000/110</option>
-          <option value="240/240">240/240 LT CT</option>
-          <option value="Whole">Whole Current</option>
-        </select>
-      </div>
-      <div>
-        <label>Side</label>
-        <select id="side">
-          <option value="LT">LT Side</option>
-          <option value="HT">HT Side</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Inputs -->
-    <label style="margin-top:18px;">Clamp Meter Currents (i1, i2, i3)</label>
-    <div class="grid-3">
-      <input id="i1" type="number" step="any" placeholder="i1">
-      <input id="i2" type="number" step="any" placeholder="i2">
-      <input id="i3" type="number" step="any" placeholder="i3">
-    </div>
-
-    <label>Meter Currents (I1, I2, I3)</label>
-    <div class="grid-3">
-      <input id="m1" type="number" step="any" placeholder="I1">
-      <input id="m2" type="number" step="any" placeholder="I2">
-      <input id="m3" type="number" step="any" placeholder="I3">
-    </div>
+  <h1>⚡ Ratio Test Calculator ⚡</h1>
+  <div class="grid">
+    <label>Transformer Type</label>
+    <select id="transformerType">
+      <option value="11000lt">11000/110 + LT Side</option>
+      <option value="11000ht">11000/110 + HT Side</option>
+      <option value="33000lt">33000/110 + LT Side</option>
+      <option value="33000ht">33000/110 + HT Side</option>
+      <option value="240ltct">240/240 LT CT</option>
+      <option value="whole">Whole Current</option>
+    </select>
 
     <label>Billing OMF</label>
     <input id="omf" type="number" step="any" placeholder="Enter OMF from billing software">
 
+    <label>Clamp Meter Currents (i1, i2, i3)</label>
+    <input id="i1" type="number" step="any" placeholder="Enter i1">
+    <input id="i2" type="number" step="any" placeholder="Enter i2">
+    <input id="i3" type="number" step="any" placeholder="Enter i3">
+
+    <label>Meter Currents (I1, I2, I3)</label>
+    <input id="I1" type="number" step="any" placeholder="Enter I1">
+    <input id="I2" type="number" step="any" placeholder="Enter I2">
+    <input id="I3" type="number" step="any" placeholder="Enter I3">
+
     <button onclick="calculate()">Calculate</button>
 
-    <!-- Results -->
-    <div class="results">
-      <div class="box" id="avgClamp"><span class="badge">Average Clamp Current</span><span class="value">--</span></div>
-      <div class="box" id="avgMeter"><span class="badge">Average Meter Current (Input)</span><span class="value">--</span></div>
-
-      <div class="box calc" id="calcMeter">
-        <span class="badge">🧮 Calculated Meter Current</span>
-        <span class="value">--</span>
-      </div>
-
-      <div class="box" id="diffBox">
-        <span class="badge">Δ Difference (Calculated − Input Avg)</span>
-        <span class="value">--</span>
-      </div>
-    </div>
-
-    <div id="comment" class="comment" style="display:none;"></div>
+    <div id="results"></div>
   </div>
 
   <script>
-    function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
-
     function calculate() {
-      const type = document.getElementById('transformer').value;
-      const side = document.getElementById('side').value;
+      let type = document.getElementById("transformerType").value;
+      let omf = parseFloat(document.getElementById("omf").value);
 
-      const i1 = val('i1'), i2 = val('i2'), i3 = val('i3');
-      const m1 = val('m1'), m2 = val('m2'), m3 = val('m3');
-      const omf = val('omf');
+      let i1 = parseFloat(document.getElementById("i1").value) || 0;
+      let i2 = parseFloat(document.getElementById("i2").value) || 0;
+      let i3 = parseFloat(document.getElementById("i3").value) || 0;
+      let avgClamp = (i1 + i2 + i3) / 3;
 
-      const avgClamp = (i1 + i2 + i3) / 3;
-      const avgMeter = (m1 + m2 + m3) / 3;
+      let I1 = parseFloat(document.getElementById("I1").value) || 0;
+      let I2 = parseFloat(document.getElementById("I2").value) || 0;
+      let I3 = parseFloat(document.getElementById("I3").value) || 0;
+      let avgMeter = (I1 + I2 + I3) / 3;
 
-      // Calculated meter current (uses OMF as per your rules)
       let calcMeter = 0;
-      if (type === "11000/110" && side === "LT") {
-        calcMeter = avgClamp / 26.5 / (omf / 100);
-      } else if (type === "11000/110" && side === "HT") {
-        calcMeter = avgClamp / (omf / 100);
-      } else if (type === "33000/110" && side === "LT") {
-        calcMeter = avgClamp / 79.5 / (omf / 300);
-      } else if (type === "33000/110" && side === "HT") {
-        calcMeter = avgClamp / (omf / 300);
-      } else if (type === "240/240") {
-        calcMeter = avgClamp / omf; // side ignored
-      } else if (type === "Whole") {
-        calcMeter = avgClamp;       // OMF not used
+
+      switch (type) {
+        case "11000lt":
+          calcMeter = avgClamp / 26.5 / (omf / 100);
+          break;
+        case "11000ht":
+          calcMeter = avgClamp / (omf / 100);
+          break;
+        case "33000lt":
+          calcMeter = avgClamp / 79.5 / (omf / 300);
+          break;
+        case "33000ht":
+          calcMeter = avgClamp / (omf / 300);
+          break;
+        case "240ltct":
+          calcMeter = avgClamp / omf;
+          break;
+        case "whole":
+          calcMeter = avgClamp;
+          break;
       }
 
-      const diff = calcMeter - avgMeter;
+      let diff = calcMeter - avgMeter;
 
-      // Update boxes
-      document.querySelector('#avgClamp .value').textContent = avgClamp.toFixed(3);
-      document.querySelector('#avgMeter .value').textContent = avgMeter.toFixed(3);
-      document.querySelector('#calcMeter .value').textContent = calcMeter.toFixed(3);
+      let resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = `
+        <div class="result-box"><b>Average Clamp Current:</b> ${avgClamp.toFixed(2)}</div>
+        <div class="result-box"><b>Average Meter Current (Input):</b> ${avgMeter.toFixed(2)}</div>
+        <div class="result-box highlight"><b>Calculated Meter Current:</b> ${calcMeter.toFixed(2)}</div>
+        <div class="result-box"><b>Difference:</b> ${diff.toFixed(2)}</div>
+      `;
 
-      const diffBox = document.getElementById('diffBox');
-      diffBox.querySelector('.value').textContent = diff.toFixed(3);
-
-      // Style difference + comment
-      const within = (diff >= -0.1 && diff <= 0.1);
-      diffBox.classList.remove('diff-ok','diff-bad');
-      diffBox.classList.add(within ? 'diff-ok' : 'diff-bad');
-
-      const comment = document.getElementById('comment');
-      comment.style.display = 'block';
-      if (within) {
-        comment.textContent = "✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে";
-        comment.className = "comment ok";
+      let comment = "";
+      if (diff >= -0.1 && diff <= 0.1) {
+        comment = <div class="comment ok">✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে ✅</div>;
       } else {
-        comment.textContent = "⚠️ কাম সারছে, ভালো করে চেক করতে হবে";
-        comment.className = "comment warn";
+        comment = <div class="comment problem">⚠️ কাম সারছে, ভালো করে চেক করতে হবে ⚠️</div>;
       }
+
+      resultsDiv.innerHTML += comment;
     }
   </script>
 </body>
