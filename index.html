@@ -1,169 +1,108 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ratio Test Calculator</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f7fb;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    .grid {
-      display: grid;
-      gap: 15px;
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-      color: #444;
-    }
-    input, select, button {
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-    }
-    button {
-      background: #0078d7;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #005a9e;
-    }
-    .result-box {
-      background: #eef6ff;
-      border-left: 5px solid #0078d7;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 6px;
-    }
-    .highlight {
-      background: #fff3cd;
-      border-left: 5px solid #ff9800;
-    }
-    .comment {
-      text-align: center;
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .ok {
-      background: #d4edda;
-      color: #155724;
-      border: 2px solid #28a745;
-    }
-    .problem {
-      background: #f8d7da;
-      color: #721c24;
-      border: 2px solid #dc3545;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ Ratio Test Calculator ⚡</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>⚡ Ratio Test Calculator ⚡</h1>
-  <div class="grid">
-    <label>Transformer Type</label>
-    <select id="transformerType">
-      <option value="11000lt">11000/110 + LT Side</option>
-      <option value="11000ht">11000/110 + HT Side</option>
-      <option value="33000lt">33000/110 + LT Side</option>
-      <option value="33000ht">33000/110 + HT Side</option>
-      <option value="240ltct">240/240 LT CT</option>
-      <option value="whole">Whole Current</option>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-2xl">
+    <h1 class="text-3xl font-bold text-center mb-6 text-red-600">⚡ Ratio Test Calculator ⚡</h1>
+
+    <!-- Select PT Ratio -->
+    <label class="block mb-2 font-medium">Select PT Ratio</label>
+    <select id="ptRatio" class="w-full border rounded-lg p-2 mb-4">
+      <option value="11000/110">11000/110</option>
+      <option value="33000/110">33000/110</option>
+      <option value="240/240">240/240 LT CT</option>
     </select>
 
-    <label>Billing OMF</label>
-    <input id="omf" type="number" step="any" placeholder="Enter OMF from billing software">
+    <!-- Transformer Side -->
+    <label class="block mb-2 font-medium">Transformer Current Measuring Side</label>
+    <select id="side" class="w-full border rounded-lg p-2 mb-4">
+      <option value="LT">LT Side</option>
+      <option value="HT">HT Side</option>
+    </select>
 
-    <label>Clamp Meter Currents (i1, i2, i3)</label>
-    <input id="i1" type="number" step="any" placeholder="Enter i1">
-    <input id="i2" type="number" step="any" placeholder="Enter i2">
-    <input id="i3" type="number" step="any" placeholder="Enter i3">
+    <!-- Billing OMF -->
+    <label class="block mb-2 font-medium">Billing OMF</label>
+    <input type="number" id="billingOMF" class="w-full border rounded-lg p-2 mb-4" placeholder="Enter Billing OMF">
 
-    <label>Meter Currents (I1, I2, I3)</label>
-    <input id="I1" type="number" step="any" placeholder="Enter I1">
-    <input id="I2" type="number" step="any" placeholder="Enter I2">
-    <input id="I3" type="number" step="any" placeholder="Enter I3">
+    <!-- Clamp Currents -->
+    <label class="block mb-2 font-medium">Clamp Meter Currents</label>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <input type="number" id="clamp1" class="border rounded-lg p-2" placeholder="Clamp 1">
+      <input type="number" id="clamp2" class="border rounded-lg p-2" placeholder="Clamp 2">
+      <input type="number" id="clamp3" class="border rounded-lg p-2" placeholder="Clamp 3">
+    </div>
 
-    <button onclick="calculate()">Calculate</button>
+    <!-- Energy Meter Currents -->
+    <label class="block mb-2 font-medium">Energy Meter Current</label>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <input type="number" id="meter1" class="border rounded-lg p-2" placeholder="Meter 1">
+      <input type="number" id="meter2" class="border rounded-lg p-2" placeholder="Meter 2">
+      <input type="number" id="meter3" class="border rounded-lg p-2" placeholder="Meter 3">
+    </div>
 
-    <div id="results"></div>
+    <!-- Calculate Button -->
+    <button onclick="calculate()" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Calculate</button>
+
+    <!-- Results -->
+    <div id="results" class="mt-6 hidden bg-gray-50 p-4 rounded-xl shadow-inner"></div>
   </div>
 
   <script>
     function calculate() {
-      let type = document.getElementById("transformerType").value;
-      let omf = parseFloat(document.getElementById("omf").value);
+      let ptRatio = document.getElementById("ptRatio").value;
+      let side = document.getElementById("side").value;
+      let billingOMF = parseFloat(document.getElementById("billingOMF").value);
 
-      let i1 = parseFloat(document.getElementById("i1").value) || 0;
-      let i2 = parseFloat(document.getElementById("i2").value) || 0;
-      let i3 = parseFloat(document.getElementById("i3").value) || 0;
-      let avgClamp = (i1 + i2 + i3) / 3;
+      let clamp1 = parseFloat(document.getElementById("clamp1").value) || 0;
+      let clamp2 = parseFloat(document.getElementById("clamp2").value) || 0;
+      let clamp3 = parseFloat(document.getElementById("clamp3").value) || 0;
+      let meter1 = parseFloat(document.getElementById("meter1").value) || 0;
+      let meter2 = parseFloat(document.getElementById("meter2").value) || 0;
+      let meter3 = parseFloat(document.getElementById("meter3").value) || 0;
 
-      let I1 = parseFloat(document.getElementById("I1").value) || 0;
-      let I2 = parseFloat(document.getElementById("I2").value) || 0;
-      let I3 = parseFloat(document.getElementById("I3").value) || 0;
-      let avgMeter = (I1 + I2 + I3) / 3;
+      let avgClamp = (clamp1 + clamp2 + clamp3) / 3;
+      let avgMeter = (meter1 + meter2 + meter3) / 3;
 
-      let calcMeter = 0;
-
-      switch (type) {
-        case "11000lt":
-          calcMeter = avgClamp / 26.5 / (omf / 100);
-          break;
-        case "11000ht":
-          calcMeter = avgClamp / (omf / 100);
-          break;
-        case "33000lt":
-          calcMeter = avgClamp / 79.5 / (omf / 300);
-          break;
-        case "33000ht":
-          calcMeter = avgClamp / (omf / 300);
-          break;
-        case "240ltct":
-          calcMeter = avgClamp / omf;
-          break;
-        case "whole":
-          calcMeter = avgClamp;
-          break;
+      // calculate meter current based on OMF
+      let calcMeterCurrent = 0;
+      if (ptRatio === "11000/110" && side === "LT") {
+        calcMeterCurrent = avgClamp *100 / (26.5 * billingOMF);
+      } else if (ptRatio === "11000/110" && side === "HT") {
+        calcMeterCurrent = avgClamp *100 / billingOMF;
+      } else if (ptRatio === "33000/110" && side === "LT") {
+        calcMeterCurrent = avgClamp *300/ (79.5 * billingOMF);
+      } else if (ptRatio === "33000/110" && side === "HT") {
+        calcMeterCurrent = avgClamp *300/ billingOMF;
+      } else if (ptRatio === "240/240") {
+        calcMeterCurrent = avgClamp / billingOMF;
       }
 
-      let diff = calcMeter - avgMeter;
-
-      let resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = `
-        <div class="result-box"><b>Average Clamp Current:</b> ${avgClamp.toFixed(2)}</div>
-        <div class="result-box"><b>Average Meter Current (Input):</b> ${avgMeter.toFixed(2)}</div>
-        <div class="result-box highlight"><b>Calculated Meter Current:</b> ${calcMeter.toFixed(2)}</div>
-        <div class="result-box"><b>Difference:</b> ${diff.toFixed(2)}</div>
-      `;
+      let difference = avgMeter - calcMeterCurrent;
 
       let comment = "";
-      if (diff >= -0.1 && diff <= 0.1) {
-        comment = <div class="comment ok">✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে ✅</div>;
+      if (difference >= -0.1 && difference <= 0.1) {
+        comment = "✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে ✅";
       } else {
-        comment = <div class="comment problem">⚠️ কাম সারছে, ভালো করে চেক করতে হবে ⚠️</div>;
+        comment = "⚠️ কাম সারছে, ভালো করে চেক করতে হবে ⚠️";
       }
 
-      resultsDiv.innerHTML += comment;
+      // show results
+      document.getElementById("results").classList.remove("hidden");
+      document.getElementById("results").innerHTML = `
+        <p><strong>Average Clamp Current:</strong> ${avgClamp.toFixed(2)}</p>
+        <p><strong>Average Energy Meter Current:</strong> ${avgMeter.toFixed(2)}</p>
+        <p class="bg-blue-100 p-2 rounded"><strong>Calculated Meter Current:</strong> ${calcMeterCurrent.toFixed(2)}</p>
+        <p class="bg-yellow-100 p-2 rounded"><strong>Difference:</strong> ${difference.toFixed(2)}</p>
+        <p class="text-center mt-3 font-bold text-lg">${comment}</p>
+      `;
     }
   </script>
+
 </body>
 </html>
