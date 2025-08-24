@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>⚡ Ratio Test Calculator ⚡</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -33,74 +33,102 @@
     <!-- Clamp Currents -->
     <label class="block mb-2 font-medium">Clamp Meter Currents</label>
     <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="clamp1" class="border rounded-lg p-2" placeholder="Clamp 1">
-      <input type="number" id="clamp2" class="border rounded-lg p-2" placeholder="Clamp 2">
-      <input type="number" id="clamp3" class="border rounded-lg p-2" placeholder="Clamp 3">
+      <input type="number" id="clamp1" class="border rounded-lg p-2" placeholder="Transformer Current R">
+      <input type="number" id="clamp2" class="border rounded-lg p-2" placeholder="Transformer Current Y">
+      <input type="number" id="clamp3" class="border rounded-lg p-2" placeholder="Transformer Current B">
     </div>
 
     <!-- Energy Meter Currents -->
     <label class="block mb-2 font-medium">Energy Meter Current</label>
     <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="meter1" class="border rounded-lg p-2" placeholder="Meter 1">
-      <input type="number" id="meter2" class="border rounded-lg p-2" placeholder="Meter 2">
-      <input type="number" id="meter3" class="border rounded-lg p-2" placeholder="Meter 3">
+      <input type="number" id="meter1" class="border rounded-lg p-2" placeholder="Meter Current r">
+      <input type="number" id="meter2" class="border rounded-lg p-2" placeholder="Meter Current y">
+      <input type="number" id="meter3" class="border rounded-lg p-2" placeholder="Meter Current b">
     </div>
 
     <!-- Calculate Button -->
     <button onclick="calculate()" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Calculate</button>
 
     <!-- Results -->
-    <div id="results" class="mt-6 hidden bg-gray-50 p-4 rounded-xl shadow-inner"></div>
+    <div id="results" class="mt-10 hidden">
+      <div class="border-t pt-6 space-y-4">
+        <div class="grid grid-cols-1 gap-4 text-center">
+          <div class="bg-gray-100 py-2 rounded-lg shadow">
+            <strong>🧲 Average Transformer Current:</strong> <span id="avgClamp"></span> A
+          </div>
+          <div class="bg-gray-100 py-2 rounded-lg shadow">
+            <strong>📟 Average Meter Current:</strong> <span id="avgMeter"></span> A
+          </div>
+          <div class="bg-blue-100 py-2 rounded-lg shadow">
+            <strong>🧮 Calculated Meter Current:</strong> <span id="calcMeter"></span> A
+          </div>
+          <div class="bg-yellow-200 py-2 rounded-lg shadow text-yellow-900 font-semibold">
+            📉 <strong>Difference:</strong> <span id="diff"></span> A
+          </div>
+        </div>
+        <div class="text-center mt-6">
+          <div id="commentBox" class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg inline-block"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     function calculate() {
-      let ptRatio = document.getElementById("ptRatio").value;
-      let side = document.getElementById("side").value;
-      let billingOMF = parseFloat(document.getElementById("billingOMF").value);
+      const ptRatio = document.getElementById("ptRatio").value;
+      const side = document.getElementById("side").value;
+      const billingOMF = parseFloat(document.getElementById("billingOMF").value);
 
-      let clamp1 = parseFloat(document.getElementById("clamp1").value) || 0;
-      let clamp2 = parseFloat(document.getElementById("clamp2").value) || 0;
-      let clamp3 = parseFloat(document.getElementById("clamp3").value) || 0;
-      let meter1 = parseFloat(document.getElementById("meter1").value) || 0;
-      let meter2 = parseFloat(document.getElementById("meter2").value) || 0;
-      let meter3 = parseFloat(document.getElementById("meter3").value) || 0;
+      const clampValues = [
+        parseFloat(document.getElementById("clamp1").value) || 0,
+        parseFloat(document.getElementById("clamp2").value) || 0,
+        parseFloat(document.getElementById("clamp3").value) || 0
+      ];
+      const meterValues = [
+        parseFloat(document.getElementById("meter1").value) || 0,
+        parseFloat(document.getElementById("meter2").value) || 0,
+        parseFloat(document.getElementById("meter3").value) || 0
+      ];
 
-      let avgClamp = (clamp1 + clamp2 + clamp3) / 3;
-      let avgMeter = (meter1 + meter2 + meter3) / 3;
+      const avgClamp = average(clampValues);
+      const avgMeter = average(meterValues);
 
-      // calculate meter current based on OMF
-      let calcMeterCurrent = 0;
-      if (ptRatio === "11000/110" && side === "LT") {
-        calcMeterCurrent = avgClamp *100 / (26.5 * billingOMF);
-      } else if (ptRatio === "11000/110" && side === "HT") {
-        calcMeterCurrent = avgClamp *100 / billingOMF;
-      } else if (ptRatio === "33000/110" && side === "LT") {
-        calcMeterCurrent = avgClamp *300/ (79.5 * billingOMF);
-      } else if (ptRatio === "33000/110" && side === "HT") {
-        calcMeterCurrent = avgClamp *300/ billingOMF;
-      } else if (ptRatio === "240/240") {
-        calcMeterCurrent = avgClamp / billingOMF;
+      const factors = {
+        "11000/110": { LT: 100 / 26.5, HT: 100 },
+        "33000/110": { LT: 300 / 79.5, HT: 300 },
+        "240/240": { LT: 1, HT: 1 }
+      };
+
+      const factor = factors[ptRatio]?.[side];
+      if (!factor || isNaN(billingOMF) || billingOMF <= 0) {
+        showError("⚠️ Please enter valid inputs for all fields.");
+        return;
       }
 
-      let difference = avgMeter - calcMeterCurrent;
+      const calcMeterCurrent = avgClamp * factor / billingOMF;
+      const difference = avgMeter - calcMeterCurrent;
 
-      let comment = "";
-      if (difference >= -0.1 && difference <= 0.1) {
-        comment = "✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে ✅";
-      } else {
-        comment = "⚠️ কাম সারছে, ভালো করে চেক করতে হবে ⚠️";
-      }
+      const comment = Math.abs(difference) <= 0.07
+        ? "✅ আলহামদুলিল্লাহ, সব কিছু ঠিক আছে ✅"
+        : "⚠️ কাম সারছে, ভালো করে চেক করতে হবে, মনে হচ্ছে বিলিং ওএমএফ ঠিক নাই ⚠️";
 
-      // show results
+      // Show results
       document.getElementById("results").classList.remove("hidden");
-      document.getElementById("results").innerHTML = `
-        <p><strong>Average Clamp Current:</strong> ${avgClamp.toFixed(2)}</p>
-        <p><strong>Average Energy Meter Current:</strong> ${avgMeter.toFixed(2)}</p>
-        <p class="bg-blue-100 p-2 rounded"><strong>Calculated Meter Current:</strong> ${calcMeterCurrent.toFixed(2)}</p>
-        <p class="bg-yellow-100 p-2 rounded"><strong>Difference:</strong> ${difference.toFixed(2)}</p>
-        <p class="text-center mt-3 font-bold text-lg">${comment}</p>
-      `;
+      document.getElementById("avgClamp").textContent = avgClamp.toFixed(2);
+      document.getElementById("avgMeter").textContent = avgMeter.toFixed(2);
+      document.getElementById("calcMeter").textContent = calcMeterCurrent.toFixed(2);
+      document.getElementById("diff").textContent = difference.toFixed(2);
+      document.getElementById("commentBox").textContent = comment;
+    }
+
+    function average(arr) {
+      return arr.reduce((sum, val) => sum + val, 0) / arr.length;
+    }
+
+    function showError(message) {
+      const results = document.getElementById("results");
+      results.classList.remove("hidden");
+      results.innerHTML = `<p class="text-red-600 font-semibold text-center">${message}</p>`;
     }
   </script>
 
