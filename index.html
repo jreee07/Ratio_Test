@@ -33,7 +33,7 @@
 
     <!-- Transformer Side -->
     <label class="block mb-2 font-medium">Transformer Current Measuring Side</label>
-    <select id="side" class="w-full border rounded-lg p-2 mb-4 text-sm">
+    <select id="side" class="w-full border rounded-lg p-2 mb-4 text-sm" onchange="updateClampLabels()">
       <option value="LT">LT Side</option>
       <option value="HT">HT Side</option>
     </select>
@@ -43,19 +43,19 @@
     <input type="number" id="billingOMF" class="w-full border rounded-lg p-2 mb-4 text-sm" placeholder="Enter Billing OMF">
 
     <!-- Clamp Currents -->
-    <label class="block mb-2 font-medium">Clamp Meter Current</label>
+    <label id="clampLabel" class="block mb-2 font-medium">Clamp Meter Current</label>
     <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="clamp1" class="border rounded-lg p-2 text-sm" placeholder="Transformer Current R">
-      <input type="number" id="clamp2" class="border rounded-lg p-2 text-sm" placeholder="Transformer Current Y">
-      <input type="number" id="clamp3" class="border rounded-lg p-2 text-sm" placeholder="Transformer Current B">
+      <input type="number" id="clamp1" class="border rounded-lg p-2 text-sm" placeholder="R">
+      <input type="number" id="clamp2" class="border rounded-lg p-2 text-sm" placeholder="Y">
+      <input type="number" id="clamp3" class="border rounded-lg p-2 text-sm" placeholder="B">
     </div>
 
     <!-- Energy Meter Currents -->
     <label class="block mb-2 font-medium">Energy Meter Current</label>
     <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="meter1" class="border rounded-lg p-2 text-sm" placeholder="Meter Current r">
-      <input type="number" id="meter2" class="border rounded-lg p-2 text-sm" placeholder="Meter Current y">
-      <input type="number" id="meter3" class="border rounded-lg p-2 text-sm" placeholder="Meter Current b">
+      <input type="number" id="meter1" class="border rounded-lg p-2 text-sm" placeholder="r">
+      <input type="number" id="meter2" class="border rounded-lg p-2 text-sm" placeholder="y">
+      <input type="number" id="meter3" class="border rounded-lg p-2 text-sm" placeholder="b">
     </div>
 
     <!-- Buttons: Calculate + Reset side by side -->
@@ -74,7 +74,7 @@
       <div class="border-t pt-6 space-y-4">
         <div class="grid grid-cols-1 gap-4 text-center">
           <div class="bg-gray-100 py-2 rounded-lg shadow">
-            <strong>🧲 Average Transformer Current:</strong> <span id="avgClamp"></span> A
+            <strong id="avgClampLabel">🧲 Average Transformer Current:</strong> <span id="avgClamp"></span> A
           </div>
           <div class="bg-gray-100 py-2 rounded-lg shadow">
             <strong>📟 Average Meter Current:</strong> <span id="avgMeter"></span> A
@@ -120,6 +120,19 @@
       document.getElementById('dateTime').value = formatDateTime(new Date());
     }
 
+    function updateClampLabels() {
+      const side = document.getElementById('side').value;
+      const clampLabel = document.getElementById('clampLabel');
+      const avgClampLabel = document.getElementById('avgClampLabel');
+      if (side === "LT") {
+        clampLabel.textContent = "Input Transformer LT Side Current";
+        avgClampLabel.textContent = "🧲 Average Current On Transformer LT Side:";
+      } else {
+        clampLabel.textContent = "Input Transformer HT Side Current";
+        avgClampLabel.textContent = "🧲 Average Current On Transformer HT Side:";
+      }
+    }
+
     function resetForm() {
       document.getElementById('meterNumber').value = '';
       document.getElementById('ptRatio').selectedIndex = 0;
@@ -140,6 +153,7 @@
       const commentBox = document.getElementById('commentBox');
       commentBox.textContent = '';
       commentBox.className = 'text-white font-bold py-3 px-4 rounded-lg shadow-lg inline-block';
+      updateClampLabels();
       setNow();
     }
 
@@ -153,6 +167,23 @@
       const ptRatio = document.getElementById("ptRatio").value;
       const side = document.getElementById("side").value;
       const billingOMF = parseFloat(document.getElementById("billingOMF").value);
+
+      if (isNaN(billingOMF) || billingOMF <= 0) {
+        showError("⚠️ Billing OMF must be a positive number.");
+        return;
+      }
+
+      const factors = {
+        "11000/110": { LT: 100 / 26.5, HT: 100 },
+        "33000/110": { LT: 300 / 79.5, HT: 300 },
+        "240/240": { LT: 1, HT: 1 }
+      };
+
+      const factor = factors[ptRatio]?.[side];
+      if (factor === undefined) {
+        showError("⚠️ Invalid PT Ratio or Transformer Side selected.");
+        return;
+      }
 
       const clampValues = [
         parseFloat(document.getElementById("clamp1").value) || 0,
@@ -168,19 +199,6 @@
 
       const avgClamp = average(clampValues);
       const avgMeter = average(meterValues);
-
-      const factors = {
-        "11000/110": { LT: 100 / 26.5, HT: 100 },
-        "33000/110": { LT: 300 / 79.5, HT: 300 },
-        "240/240": { LT: 1, HT: 1 }
-      };
-
-      const factor = factors[ptRatio]?.[side];
-
-      if (!factor || isNaN(billingOMF) || billingOMF <= 0) {
-        showError("⚠️ Please enter valid inputs for all fields.");
-        return;
-      }
 
       const calcMeterCurrent = avgClamp * factor / billingOMF;
       const difference = avgMeter - calcMeterCurrent;
@@ -221,7 +239,10 @@
       results.innerHTML = `<p class="text-red-600 font-semibold text-center">${message}</p>`;
     }
 
-    window.addEventListener('load', setNow);
+    window.addEventListener('load', () => {
+      setNow();
+      updateClampLabels();
+    });
   </script>
 </body>
 </html>
