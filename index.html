@@ -8,11 +8,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex justify-center items-center min-h-screen">
-  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-2xl">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-5xl">
 
     <h1 class="text-3xl font-bold text-center mb-6 text-red-600">⚡ Ratio Test Calculator ⚡</h1>
 
-    <!-- Header: Date/Time + Meter Number -->
+    <!-- Header -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
       <div>
         <label for="dateTime" class="block mb-1 font-medium">Date & Time</label>
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <!-- Select PT Ratio -->
+    <!-- PT Ratio -->
     <label class="block mb-2 font-medium">Select PT Ratio</label>
     <select id="ptRatio" class="w-full border rounded-lg p-2 mb-4 text-sm">
       <option value="11000/110">11000/110</option>
@@ -41,119 +41,114 @@
 
     <!-- Billing OMF -->
     <label class="block mb-2 font-medium">Billing OMF</label>
-    <input type="number" id="billingOMF" class="w-full border rounded-lg p-2 mb-4 text-sm" placeholder="Enter Billing OMF">
+    <input type="number" id="billingOMF" class="w-full border rounded-lg p-2 mb-6 text-sm" placeholder="Enter Billing OMF">
 
-    <!-- Clamp Currents -->
-    <label id="clampLabel" class="block mb-2 font-medium">Clamp Meter Current</label>
-    <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="clamp1" class="border rounded-lg p-2 text-sm" placeholder="R">
-      <input type="number" id="clamp2" class="border rounded-lg p-2 text-sm" placeholder="Y">
-      <input type="number" id="clamp3" class="border rounded-lg p-2 text-sm" placeholder="B">
-    </div>
-
-    <!-- Energy Meter Currents -->
-    <label class="block mb-2 font-medium">Input Meter Current</label>
-    <div class="grid grid-cols-3 gap-2 mb-4">
-      <input type="number" id="meter1" class="border rounded-lg p-2 text-sm" placeholder="r">
-      <input type="number" id="meter2" class="border rounded-lg p-2 text-sm" placeholder="y">
-      <input type="number" id="meter3" class="border rounded-lg p-2 text-sm" placeholder="b">
-    </div>
-
-    <!-- Buttons: Calculate + Reset side by side -->
-    <div class="flex space-x-2 mb-6">
-      <button onclick="calculate()" class="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">
-        Calculate
-      </button>
-
-      <button onclick="resetForm()" class="flex-1 bg-gradient-to-r from-red-400 to-red-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:from-red-500 hover:to-red-700 transition">
-        Reset
-      </button>
-    </div>
-
-    <!-- Results -->
-    <div id="results" class="mt-10 hidden">
-      <div class="border-t pt-6 space-y-4">
-        <div class="grid grid-cols-1 gap-4 text-center">
-          <div class="bg-gray-100 py-2 rounded-lg shadow">
-            <strong id="avgClampLabel">🧲 Average Transformer Current:</strong> <span id="avgClamp"></span> A
-          </div>
-          <div class="bg-gray-100 py-2 rounded-lg shadow">
-            <strong>📟 Average Meter Current:</strong> <span id="avgMeter"></span> A
-          </div>
-          <div class="bg-blue-100 py-2 rounded-lg shadow">
-            <strong>🧮 Calculated Meter Current:</strong> <span id="calcMeter"></span> A
-          </div>
-          <div class="bg-yellow-200 py-2 rounded-lg shadow text-yellow-900 font-semibold">
-            📉 <strong>Difference:</strong> <span id="diff"></span> A
-          </div>
+    <!-- Transformer Currents -->
+    <label id="clampLabel" class="block mb-2 font-medium">Transformer Current (Enter 4 values per phase)</label>
+    <div class="space-y-3 mb-6">
+      <!-- R Phase -->
+      <div>
+        <span class="font-semibold">R Phase:</span>
+        <div class="grid grid-cols-4 gap-2 mt-1">
+          <input type="number" id="clampR1" class="border rounded-lg p-2 text-sm" placeholder="R1">
+          <input type="number" id="clampR2" class="border rounded-lg p-2 text-sm" placeholder="R2">
+          <input type="number" id="clampR3" class="border rounded-lg p-2 text-sm" placeholder="R3">
+          <input type="number" id="clampR4" class="border rounded-lg p-2 text-sm" placeholder="R4">
         </div>
-
-        <div class="text-center mt-6">
-          <div id="commentBox" class="text-white font-bold py-3 px-4 rounded-lg shadow-lg inline-block"></div>
+      </div>
+      <!-- Y Phase -->
+      <div>
+        <span class="font-semibold">Y Phase:</span>
+        <div class="grid grid-cols-4 gap-2 mt-1">
+          <input type="number" id="clampY1" class="border rounded-lg p-2 text-sm" placeholder="Y1">
+          <input type="number" id="clampY2" class="border rounded-lg p-2 text-sm" placeholder="Y2">
+          <input type="number" id="clampY3" class="border rounded-lg p-2 text-sm" placeholder="Y3">
+          <input type="number" id="clampY4" class="border rounded-lg p-2 text-sm" placeholder="Y4">
+        </div>
+      </div>
+      <!-- B Phase -->
+      <div>
+        <span class="font-semibold">B Phase:</span>
+        <div class="grid grid-cols-4 gap-2 mt-1">
+          <input type="number" id="clampB1" class="border rounded-lg p-2 text-sm" placeholder="B1">
+          <input type="number" id="clampB2" class="border rounded-lg p-2 text-sm" placeholder="B2">
+          <input type="number" id="clampB3" class="border rounded-lg p-2 text-sm" placeholder="B3">
+          <input type="number" id="clampB4" class="border rounded-lg p-2 text-sm" placeholder="B4">
         </div>
       </div>
     </div>
 
-    <!-- Footer Notes -->
-    <div class="mt-10 text-center space-y-1">
-      <p class="text-gray-600 text-xs">
-        Disclaimer: This calculator does not verify metering connection. To ensure proper metering connection, you need to check vector diagram/phase angles also.
-      </p>
-      <p class="text-gray-500 text-xs">
-        © Energy Audit Cell, HQ, WZPDCL
-      </p>
+    <!-- Meter Currents (1 per phase) -->
+    <label class="block mb-2 font-medium">Input Meter Current</label>
+    <div class="grid grid-cols-3 gap-2 mb-6">
+      <input type="number" id="meter1" class="border rounded-lg p-2 text-sm" placeholder="R">
+      <input type="number" id="meter2" class="border rounded-lg p-2 text-sm" placeholder="Y">
+      <input type="number" id="meter3" class="border rounded-lg p-2 text-sm" placeholder="B">
     </div>
+
+    <!-- Buttons -->
+    <div class="flex space-x-2 mb-6">
+      <button onclick="calculate()" class="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">Calculate</button>
+      <button onclick="resetForm()" class="flex-1 bg-gradient-to-r from-red-400 to-red-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:from-red-500 hover:to-red-700 transition">Reset</button>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-10 hidden">
+      <div class="border-t pt-6 space-y-4 text-center">
+        <div class="bg-gray-100 py-2 rounded-lg shadow">
+          <strong>🧲 Transformer Phase Sums (R,Y,B):</strong> <span id="sumClamp"></span> A
+        </div>
+        <div class="bg-gray-100 py-2 rounded-lg shadow">
+          <strong>⚡ Average Transformer Current:</strong> <span id="avgClamp"></span> A
+        </div>
+        <div class="bg-gray-100 py-2 rounded-lg shadow">
+          <strong>📟 Average Meter Current:</strong> <span id="avgMeter"></span> A
+        </div>
+        <div class="bg-blue-100 py-2 rounded-lg shadow">
+          <strong>🧮 Calculated Meter Current:</strong> <span id="calcMeter"></span> A
+        </div>
+        <div class="bg-yellow-200 py-2 rounded-lg shadow text-yellow-900 font-semibold">
+          📉 <strong>Difference (Avg):</strong> <span id="diff"></span> A
+        </div>
+        <div id="commentBox" class="text-white font-bold py-3 px-4 rounded-lg shadow-lg inline-block mt-4"></div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     function formatDateTime(dt = new Date()) {
       const pad = (n) => String(n).padStart(2, '0');
-      const dd = pad(dt.getDate());
-      const mm = pad(dt.getMonth() + 1);
-      const yyyy = dt.getFullYear();
-      const hh = pad(dt.getHours());
-      const min = pad(dt.getMinutes());
-      const ss = pad(dt.getSeconds());
-      return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
+      return `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
     }
 
     function setNow() {
-      document.getElementById('dateTime').value = formatDateTime(new Date());
+      document.getElementById('dateTime').value = formatDateTime();
     }
 
     function updateClampLabels() {
       const side = document.getElementById('side').value;
       const clampLabel = document.getElementById('clampLabel');
-      const avgClampLabel = document.getElementById('avgClampLabel');
       if (side === "LT") {
-        clampLabel.textContent = "Input Transformer LT Side Current";
-        avgClampLabel.textContent = "🧲 Average Current On Transformer LT Side:";
+        clampLabel.textContent = "Transformer LT Side Current";
       } else {
-        clampLabel.textContent = "Input Transformer HT Side Current";
-        avgClampLabel.textContent = "🧲 Average Current On Transformer HT Side:";
+        clampLabel.textContent = "Transformer HT Side Current (4 per phase)";
       }
     }
 
+    function getPhaseSum(phase) {
+      let sum = 0;
+      for (let i = 1; i <= 4; i++) {
+        sum += parseFloat(document.getElementById("clamp" + phase + i).value) || 0;
+      }
+      return sum;
+    }
+
     function resetForm() {
-      document.getElementById('meterNumber').value = '';
+      document.querySelectorAll("input").forEach(el => { if (el.type === "number" || el.type === "text") el.value = ""; });
       document.getElementById('ptRatio').selectedIndex = 0;
       document.getElementById('side').selectedIndex = 0;
-      document.getElementById('billingOMF').value = '';
-      document.getElementById('clamp1').value = '';
-      document.getElementById('clamp2').value = '';
-      document.getElementById('clamp3').value = '';
-      document.getElementById('meter1').value = '';
-      document.getElementById('meter2').value = '';
-      document.getElementById('meter3').value = '';
-      const results = document.getElementById('results');
-      results.classList.add('hidden');
-      results.querySelector('#avgClamp').textContent = '';
-      results.querySelector('#avgMeter').textContent = '';
-      results.querySelector('#calcMeter').textContent = '';
-      results.querySelector('#diff').textContent = '';
-      const commentBox = document.getElementById('commentBox');
-      commentBox.textContent = '';
-      commentBox.className = 'text-white font-bold py-3 px-4 rounded-lg shadow-lg inline-block';
+      document.getElementById('results').classList.add('hidden');
       updateClampLabels();
       setNow();
     }
@@ -165,53 +160,45 @@
         return;
       }
 
-      const ptRatio = document.getElementById("ptRatio").value;
-      const side = document.getElementById("side").value;
       const billingOMF = parseFloat(document.getElementById("billingOMF").value);
-
       if (isNaN(billingOMF) || billingOMF <= 0) {
-        showError("⚠️ Billing OMF must be a positive number.");
+        alert("⚠️ Billing OMF must be a positive number.");
         return;
       }
 
+      const ptRatio = document.getElementById("ptRatio").value;
+      const side = document.getElementById("side").value;
       const factors = {
         "11000/110": { LT: 100 / 26.5, HT: 100 },
         "33000/110": { LT: 300 / 79.5, HT: 300 },
         "240/240": { LT: 1, HT: 1 }
       };
-
       const factor = factors[ptRatio]?.[side];
-      if (factor === undefined) {
-        showError("⚠️ Invalid PT Ratio or Transformer Side selected.");
-        return;
-      }
 
-      const clampValues = [
-        parseFloat(document.getElementById("clamp1").value) || 0,
-        parseFloat(document.getElementById("clamp2").value) || 0,
-        parseFloat(document.getElementById("clamp3").value) || 0
-      ];
+      // Transformer phase sums
+      const clampR = getPhaseSum("R");
+      const clampY = getPhaseSum("Y");
+      const clampB = getPhaseSum("B");
 
+      // Meter currents (1 per phase)
       const meterValues = [
         parseFloat(document.getElementById("meter1").value) || 0,
         parseFloat(document.getElementById("meter2").value) || 0,
         parseFloat(document.getElementById("meter3").value) || 0
       ];
 
-      const avgClamp = average(clampValues);
-      const avgMeter = average(meterValues);
+      // Averages
+      const avgClamp = (clampR + clampY + clampB) / 3;
+      const avgMeter = (meterValues[0] + meterValues[1] + meterValues[2]) / 3;
 
       const calcMeterCurrent = avgClamp * factor / billingOMF;
       const difference = avgMeter - calcMeterCurrent;
-      const absDiff = Math.abs(difference);
 
-      let comment = "";
-      let classes = "";
-
-      if (absDiff < 0.07) {
+      let comment = "", classes = "";
+      if (Math.abs(difference) < 0.07) {
         comment = "আলহামদুলিল্লাহ, রেশিও এবং ওএমএফ ঠিক আছে";
         classes = "bg-gradient-to-r from-green-500 to-green-700";
-      } else if (absDiff <= 0.1) {
+      } else if (Math.abs(difference) <= 0.1) {
         comment = "সামান্য একটু পার্থক্য পাওয়া যাচ্ছে, আরেকবার চেক করুন, প্রয়োজনে সিটি/পিটি'র নেমপ্লেট চেক করুন";
         classes = "bg-gradient-to-r from-yellow-400 to-yellow-600 text-yellow-950";
       } else {
@@ -219,7 +206,9 @@
         classes = "bg-gradient-to-r from-red-500 to-red-700";
       }
 
+      // Show results
       document.getElementById("results").classList.remove("hidden");
+      document.getElementById("sumClamp").textContent = `R=${clampR.toFixed(2)}, Y=${clampY.toFixed(2)}, B=${clampB.toFixed(2)}`;
       document.getElementById("avgClamp").textContent = avgClamp.toFixed(2);
       document.getElementById("avgMeter").textContent = avgMeter.toFixed(2);
       document.getElementById("calcMeter").textContent = calcMeterCurrent.toFixed(2);
@@ -230,20 +219,7 @@
       commentBox.className = `font-bold py-3 px-4 rounded-lg shadow-lg inline-block text-white ${classes}`;
     }
 
-    function average(arr) {
-      return arr.reduce((sum, val) => sum + val, 0) / arr.length;
-    }
-
-    function showError(message) {
-      const results = document.getElementById("results");
-      results.classList.remove("hidden");
-      results.innerHTML = `<p class="text-red-600 font-semibold text-center">${message}</p>`;
-    }
-
-    window.addEventListener('load', () => {
-      setNow();
-      updateClampLabels();
-    });
+    window.addEventListener('load', () => { setNow(); updateClampLabels(); });
   </script>
 </body>
 </html>
